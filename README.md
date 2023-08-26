@@ -1,8 +1,5 @@
-# django_model_tutorial
-
-## Django Model Relationships 與 MySQL SQL 語法對應
-Django 是一個強大的 Web 框架，它提供了方便的 model 定義方式來處理資料庫的 relationships。
-這邊想了解這些 relationships 的建立如何反映在 SQL 語句中。
+## Django Model 與 MySQL SQL 語法的對應
+Django 是一個強大的 Web 框架，它提供了方便的 ORM 來操作資料庫。
 
 ## 準備 Django Model
 首先，讓我們看一下我們要處理的 Django 模型：
@@ -29,7 +26,7 @@ class Post(models.Model):
 2. `OneToOneField`
 3. `ManyToManyField`
 
-## MySQL SQL 語法
+## Django Model 關聯性的建立與 SQL 語法的關係
 透過 `mysqldump` 語法，我們可以了解建立這幾個表格中關聯性的 SQL 語法。
 讓我們從 `Post` 資料表中的 `ForeignKey` 開始：
 ```sql
@@ -43,7 +40,7 @@ CREATE TABLE `social_post` (
   CONSTRAINT `social_post_created_by_id_8eed651b_fk_social_person_id` FOREIGN KEY (`created_by_id`) REFERENCES `social_person` (`id`)
 ) ENGINE=InnoDB
 ```
-在預設情況下，建立 `ForeignKey` 會為該欄位添加外鍵約束，同時會為其創建索引。
+在預設情況下，建立 `ForeignKey` 會為該欄位**添加外鍵約束，同時會為其創建索引**。
 
 接下來，我們看一下 `Profile` 資料表中的 `OneToOneField`：
 ```sql
@@ -56,7 +53,7 @@ CREATE TABLE `social_profile` (
   CONSTRAINT `social_profile_person_id_0063488b_fk_social_person_id` FOREIGN KEY (`person_id`) REFERENCES `social_person` (`id`)
 ) ENGINE=InnoDB
 ```
-與 `ForeignKey` 類似，預設情況下，它會為欄位添加外鍵約束，並建立唯一索引。
+與 `ForeignKey` 類似，預設情況下，它會為欄位**添加外鍵約束，並建立唯一索引**。
 
 最後，我們來看一下 `Person` 資料表中的 `ManyToManyField`：
 ```sql
@@ -77,9 +74,9 @@ CREATE TABLE `social_person_like_posts` (
   CONSTRAINT `social_person_like_posts_post_id_180d14c9_fk_social_post_id` FOREIGN KEY (`post_id`) REFERENCES `social_post` (`id`)
 ) ENGINE=InnoDB
 ```
-可以看到，在這裡我們實際上建立了另一個資料表，並在其上建立了兩個外鍵，分別指向 `Persion(id)` 和 `Post(id)`。
+可以看到，在這裡我們實際上**建立了另一個資料表**，並在其上建立了兩個外鍵，分別指向 `Persion(id)` 和 `Post(id)`。
 
-## Django Query
+## 三種關聯性在使用上的差異
 接下來，我們將了解在 Django ORM 查詢中的使用差異。
 
 `ForeignKey`：
@@ -98,7 +95,7 @@ profile = Profile.objects.first()
 print(profile.person_id)
 print(profile.person.name)
 
-# 反向
+# 反向查詢
 person = Person.objects.first()
 print(person.profile.phone)
 ```
@@ -108,7 +105,7 @@ print(person.profile.phone)
 person = Person.objects.first()
 person.like_posts.all()
 
-# 反向
+# 反向查詢
 post = Post.objects.first()
 post.liking_person.all()
 ```
